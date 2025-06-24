@@ -13,3 +13,6 @@ A portable, teardown-friendly HPC training environment with SLURM, Prometheus, A
 ## Structure
 - `ansible/`: Automation for SLURM, monitoring, node config
 - `vagrant/`, `container/`, `scripts/`: Platform-specific deployment
+
+
+# Trigger for Docker CI only
