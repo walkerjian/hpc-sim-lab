@@ -14,7 +14,14 @@ services:
       hpc-net:
         ipv4_address: 10.0.0.2
     command: >
-      bash -c "sleep infinity"
+      bash -c "
+        cp /slurm/* /etc/slurm &&
+        cp /slurm/munge.key /etc/munge/munge.key &&
+        chmod 600 /etc/munge/munge.key &&
+        /etc/init.d/munge start &&
+        mkdir -p /var/spool/slurm/ctld &&
+        slurmctld -vvv &&
+        tail -f /dev/null"
 
   compute1:
     build:
@@ -29,7 +36,14 @@ services:
       hpc-net:
         ipv4_address: 10.0.0.3
     command: >
-      bash -c "sleep infinity"
+      bash -c "
+        cp /slurm/* /etc/slurm &&
+        cp /slurm/munge.key /etc/munge/munge.key &&
+        chmod 600 /etc/munge/munge.key &&
+        /etc/init.d/munge start &&
+        mkdir -p /var/spool/slurm/d &&
+        slurmd -vvv &&
+        tail -f /dev/null"
 
   compute2:
     build:
@@ -44,7 +58,14 @@ services:
       hpc-net:
         ipv4_address: 10.0.0.4
     command: >
-      bash -c "sleep infinity"
+      bash -c "
+        cp /slurm/* /etc/slurm &&
+        cp /slurm/munge.key /etc/munge/munge.key &&
+        chmod 600 /etc/munge/munge.key &&
+        /etc/init.d/munge start &&
+        mkdir -p /var/spool/slurm/d &&
+        slurmd -vvv &&
+        tail -f /dev/null"
 
 networks:
   hpc-net:
