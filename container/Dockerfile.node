@@ -2,6 +2,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Core packages
 RUN apt update && apt install -y \
     openssh-server \
     build-essential gfortran libgfortran5 \
@@ -12,12 +13,37 @@ RUN apt update && apt install -y \
  && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
  && apt clean
 
+# SLURM config
 COPY slurm/slurm.conf /slurm/slurm.conf
 RUN mkdir -p /etc/slurm && cp /slurm/slurm.conf /etc/slurm/
 
-# Setup SSH
-RUN mkdir /var/run/sshd
-RUN echo 'root:password' | chpasswd
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+# Munge key and daemon install
+COPY slurm/munge.key /munge/munge.key
+RUN apt install -y munge && \
+    mkdir -p /etc/munge && \
+    cp /munge/munge.key /etc/munge/ && \
+    chown munge:munge /etc/munge/munge.key && \
+    chmod 400 /etc/munge/munge.key && \
+    chmod 755 /etc/munge
 
-CMD ["/bin/bash"]
+# Munge runtime and logs
+RUN mkdir -p /run/munge /var/log/munge && \
+    chown munge:munge /run/munge /var/log/munge && \
+    chmod 755 /run/munge && \
+    chmod 750 /var/log/munge
+
+# SLURM install & directories
+RUN apt install -y slurm-wlm slurm-client && \
+    mkdir -p /var/spool/slurm/ctld /var/log/slurm && \
+    chown -R slurm:slurm /var/spool/slurm /var/log/slurm
+
+# Setup SSH
+RUN mkdir -p /var/run/sshd && \
+    echo 'root:password' | chpasswd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# Copy entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
