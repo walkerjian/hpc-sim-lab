@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  controller:
+    image: ubuntu:22.04
+    container_name: slurm-controller
+    command: sleep infinity
+    networks:
+      hpc-net:
+        ipv4_address: 10.0.0.2
+    volumes:
+      - ./configs:/config
+      - ./scripts:/scripts
+    tty: true
+
+  compute1:
+    image: ubuntu:22.04
+    container_name: slurm-compute1
+    command: sleep infinity
+    networks:
+      hpc-net:
+        ipv4_address: 10.0.0.3
+    tty: true
+
+  compute2:
+    image: ubuntu:22.04
+    container_name: slurm-compute2
+    command: sleep infinity
+    networks:
+      hpc-net:
+        ipv4_address: 10.0.0.4
+    tty: true
+
+networks:
+  hpc-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
