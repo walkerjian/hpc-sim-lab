@@ -12,6 +12,8 @@ RUN apt update && apt install -y \
  && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
  && apt clean
 
+COPY slurm/slurm.conf /slurm/slurm.conf
+RUN mkdir -p /etc/slurm && cp /slurm/slurm.conf /etc/slurm/
 
 # Setup SSH
 RUN mkdir /var/run/sshd
