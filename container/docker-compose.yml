@@ -1,35 +1,50 @@
-version: "3.8"
+version: '3.8'
 
 services:
   controller:
-    image: ubuntu:22.04
+    build:
+      context: .
+      dockerfile: Dockerfile.node
     container_name: slurm-controller
-    command: sleep infinity
+    hostname: controller
+    privileged: true
+    volumes:
+      - ./slurm:/slurm
     networks:
       hpc-net:
         ipv4_address: 10.0.0.2
-    volumes:
-      - ./configs:/config
-      - ./scripts:/scripts
-    tty: true
+    command: >
+      bash -c "sleep infinity"
 
   compute1:
-    image: ubuntu:22.04
+    build:
+      context: .
+      dockerfile: Dockerfile.node
     container_name: slurm-compute1
-    command: sleep infinity
+    hostname: compute1
+    privileged: true
+    volumes:
+      - ./slurm:/slurm
     networks:
       hpc-net:
         ipv4_address: 10.0.0.3
-    tty: true
+    command: >
+      bash -c "sleep infinity"
 
   compute2:
-    image: ubuntu:22.04
+    build:
+      context: .
+      dockerfile: Dockerfile.node
     container_name: slurm-compute2
-    command: sleep infinity
+    hostname: compute2
+    privileged: true
+    volumes:
+      - ./slurm:/slurm
     networks:
       hpc-net:
         ipv4_address: 10.0.0.4
-    tty: true
+    command: >
+      bash -c "sleep infinity"
 
 networks:
   hpc-net:

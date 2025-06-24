@@ -1,0 +1,15 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && apt install -y \
+    slurm-wlm slurmctld slurmd munge openssh-server \
+    iputils-ping net-tools htop vim sudo systemd tzdata \
+    && apt clean
+
+# Setup SSH
+RUN mkdir /var/run/sshd
+RUN echo 'root:password' | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+CMD ["/bin/bash"]
